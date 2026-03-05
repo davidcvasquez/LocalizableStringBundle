@@ -25,7 +25,7 @@ let package = Package(
             ],
             path: "Sources/LocalizableStringBundle",
             resources: [
-                .copy("Resources/LocalizableStringBundle-Strings.bundle")
+                .copy("Resources/LocalizableStringBundle_LocalizableStringBundle.bundle")
             ]
         ),
         .testTarget(
