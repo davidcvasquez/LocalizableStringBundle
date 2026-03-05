@@ -1,5 +1,7 @@
 # LocalizableStringBundle
 
+[![Swift](https://github.com/davidcvasquez/LocalizableStringBundle/actions/workflows/swift.yml/badge.svg)](https://github.com/davidcvasquez/LocalizableStringBundle/actions/workflows/swift.yml)
+
 Live, localized string bundles for multiple domains (packages or an app), with editing services to apply changes or reset a change and fallback to a value provided by an embedded bundle. Remote service can also be implemented by updating the support bundle, which is managed in the "Application Support" directory.
 
 ## Details
