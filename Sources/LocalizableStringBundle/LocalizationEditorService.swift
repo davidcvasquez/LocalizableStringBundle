@@ -51,7 +51,7 @@ public final class LocalizationEditorService {
                 locale: locale
             )
 
-            try LocalizedStringsTextFile.set(key.key, newValue, in: stringsURL)
+            try LocalizedStringsFile.set(key.key, newValue, in: stringsURL)
 
             self.reviseSupportBundle(
                 superBundle: key.superBundle,
@@ -82,7 +82,7 @@ public final class LocalizationEditorService {
                 locale: locale
             )
 
-            try LocalizedStringsTextFile.remove(key.key, in: stringsURL)
+            try LocalizedStringsFile.remove(key.key, in: stringsURL)
 
             self.reviseSupportBundle(
                 superBundle: key.superBundle,
