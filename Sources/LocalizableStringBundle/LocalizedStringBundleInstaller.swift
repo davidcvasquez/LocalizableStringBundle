@@ -42,21 +42,14 @@ public enum LocalizedStringBundleInstaller {
 
         LocalizationKey.superBundles[superBundleID] = superBundle
 
-        // Find the embedded string bundle inside the domain super bundle.
-        guard let embeddedURL = superBundle.url(
-            forResource: embeddedBundleName, withExtension: "bundle") else {
-            throw LocalizedStringBundleInstallerError.embeddedURLNotFound
-        }
-
         let uniqueInstallName = "\(installName).\(UUIDBase58.idBase58)"
-
         // Build Application Support destination: .../<app-bundle-id>/Resources/<installName>.bundle
         let dstURL = try LocalizedStringBundlePaths.applicationSupportBundleURL(
             superBundleID: superBundleID, installName: uniqueInstallName)
 
-        // Copy embedded bundle to support bundle location, according to overwriteExisting.
-        try LocalizedStringBundlePaths.copyDirectoryBundle(
-            from: embeddedURL, to: dstURL, overwriteExisting: overwriteExisting)
+        try LocalizedStringBundlePaths.copyStringDirectories(
+            from: superBundle,
+            subdirectory: "Strings", to: dstURL, overwriteExisting: true)
 
         // Load support bundle and register by ID.
         if let supportBundle = Bundle(url: dstURL) {

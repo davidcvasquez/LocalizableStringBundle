@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "LocalizableStringBundle",
+    defaultLocalization: "en",
     platforms: [
         .macOS(.v14),
         .iOS(.v17)
@@ -25,7 +26,7 @@ let package = Package(
             ],
             path: "Sources/LocalizableStringBundle",
             resources: [
-                .copy("Resources/LocalizableStringBundle_LocalizableStringBundle.bundle")
+                .process("Resources")
             ]
         ),
         .testTarget(

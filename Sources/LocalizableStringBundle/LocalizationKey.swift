@@ -32,8 +32,11 @@ public struct LocalizationKey: Hashable, Codable {
 
     private let rawKey: String
 
-    /// The super bundle from which the embedded bundle is copied to a support bundle.
-    private let superBundle: Bundle
+    /// The super bundle from which the Strings sub-directory is copied to a support bundle.
+    public let superBundle: Bundle
+
+    /// The table name for a given group of strings.
+    private let tableName: String
 
     /// Support bundles for live updates and remote service.
     public private(set) static var supportBundles: [String: Bundle] = [:]
@@ -87,9 +90,13 @@ public struct LocalizationKey: Hashable, Codable {
     }()
 
     /// Initializer by the key and super bundle that owns the embedded bundle.
-    public init(_ rawKey: String, bundle: Bundle = Self.superBundle) {
+    public init(_ rawKey: String,
+                bundle: Bundle = Self.superBundle,
+                tableName: String = "Localizable"
+    ) {
         self.rawKey = rawKey
         self.superBundle = bundle
+        self.tableName = tableName
         Self.installLocaleChangeObserverIfNeeded()
     }
 
@@ -97,6 +104,7 @@ public struct LocalizationKey: Hashable, Codable {
     private enum CodingKeys: String, CodingKey {
         case rawKey
         case superBundleID
+        case tableName
     }
 
     /// Initializer from a decoder.
@@ -109,6 +117,7 @@ public struct LocalizationKey: Hashable, Codable {
         } else {
             throw LocalizationKeyError.bundleIDNotFound
         }
+        self.tableName = try container.decode(String.self, forKey: .tableName)
         Self.installLocaleChangeObserverIfNeeded()
     }
 
@@ -116,6 +125,7 @@ public struct LocalizationKey: Hashable, Codable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(rawKey, forKey: .rawKey)
+        try container.encode(tableName, forKey: .tableName)
         if let superBundleID = superBundle.bundleIdentifier {
             try container.encode(superBundleID, forKey: .superBundleID)
         }
@@ -150,7 +160,8 @@ public struct LocalizationKey: Hashable, Codable {
 
         // Otherwise, probe the bundle to see if the key exists.
         let sentinel = "\u{1F6D1}__L10N_MISSING__\u{1F6D1}"
-        let found = bundle.localizedString(forKey: rawKey, value: sentinel, table: nil) != sentinel
+        let found = bundle.localizedString(
+            forKey: rawKey, value: sentinel, table: self.tableName) != sentinel
 
         if found {
             // Insert this key into the cached set for the bundleID for fast lookups.
@@ -177,7 +188,7 @@ public struct LocalizationKey: Hashable, Codable {
 
         Logger.debug("Effective bundle for \(rawKey): \(ObjectIdentifier(bundle))", LogCategory.localization)
 
-        return LocalizedStringResource(.init(rawKey), bundle: bundle)
+        return LocalizedStringResource(.init(rawKey), table: self.tableName, bundle: bundle)
     }
 
     /// Parameterized / plural-aware localized string that handles an integer count parameter of 0, 1, or more.

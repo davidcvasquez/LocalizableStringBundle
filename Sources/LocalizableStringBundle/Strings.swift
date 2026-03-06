@@ -11,8 +11,12 @@
 
 import SwiftUI
 
+fileprivate func menuName(_ key: String) -> LocalizationKey {
+    LocalizationKey(key, tableName: "MenuNames")
+}
+
 public extension LocalizationKey {
 
-    static let applyLabel = LocalizationKey("apply")
-    static let resetLabel = LocalizationKey("reset")
+    static let applyLabel = menuName("apply")
+    static let resetLabel = menuName("reset")
 }

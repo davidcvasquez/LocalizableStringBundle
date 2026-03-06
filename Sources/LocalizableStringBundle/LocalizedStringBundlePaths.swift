@@ -66,43 +66,47 @@ public enum LocalizedStringBundlePaths {
         return folder.appendingPathComponent("\(installName).bundle", isDirectory: true)
     }
 
-    public static func copyDirectoryBundle(
-        from srcURL: URL,
-        to dstURL: URL,
-        overwriteExisting: Bool
+    public static func copyStringDirectories(
+        from superBundle: Bundle,
+        subdirectory: String,
+        to supportBundleURL: URL,
+        overwriteExisting: Bool = false
     ) throws {
-        guard srcURL != dstURL else {
-            Logger.error("Cannot copy bundle onto itself.", LogCategory.localization)
-            throw LocalizedStringBundlePathsError.invalidURLs
+
+        guard let subdirectoryURL = superBundle.url(
+            forResource: subdirectory, withExtension: nil) else {
+
+            Logger.debug("subdirectory not found", LogCategory.localization)
+            return
         }
 
         let fm = FileManager.default
+        try fm.createDirectory(at: supportBundleURL, withIntermediateDirectories: true)
 
-        if fm.fileExists(atPath: dstURL.path) {
-            if overwriteExisting {
-                // Remove the existing directory bundle first
-                try fm.removeItem(at: dstURL)
-            } else {
-                throw LocalizedStringBundlePathsError.overwriteNotEnabled
-            }
-        }
-
-        // Ensure the parent directory exists
-        try fm.createDirectory(
-            at: dstURL.deletingLastPathComponent(),
-            withIntermediateDirectories: true
+        let entries = try fm.contentsOfDirectory(
+            at: subdirectoryURL,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
         )
 
-        // Copy the new bundle in
-        try fm.copyItem(at: srcURL, to: dstURL)
-    }
+        // Copy all of the "*.lproj" directories over to the supportBundle.
+        for src in entries {
+            let values = try src.resourceValues(forKeys: [.isDirectoryKey])
+            guard values.isDirectory == true else { continue }
+            guard src.pathExtension == "lproj" else { continue }
 
-    /// - Returns: The URL for the info property list file.
-    public static func infoURL(
-        supportBundleURL: URL
-    ) -> URL {
-        supportBundleURL
-            .appendingPathComponent(infoFilename, isDirectory: false)
+            let dst = supportBundleURL.appendingPathComponent(src.lastPathComponent, isDirectory: true)
+
+            if fm.fileExists(atPath: dst.path) {
+                if overwriteExisting {
+                    _ = try fm.replaceItemAt(dst, withItemAt: src)
+                } else {
+                    continue
+                }
+            } else {
+                try fm.copyItem(at: src, to: dst)
+            }
+        }
     }
 
     /// - Returns: The URL for the localizable strings file.
@@ -129,7 +133,6 @@ public enum LocalizedStringBundlePaths {
         "\(locale).lproj"
     }
 
-    private static let infoFilename: String = "Info.plist"
     private static let localizableStringsFilename: String = "Localizable.strings"
     private static let localizableStringsDictFilename: String = "Localizable.stringsdict"
 }

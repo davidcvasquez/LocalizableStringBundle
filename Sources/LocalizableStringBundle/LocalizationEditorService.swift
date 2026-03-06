@@ -54,7 +54,7 @@ public final class LocalizationEditorService {
             try LocalizedStringsTextFile.set(key.key, newValue, in: stringsURL)
 
             self.reviseSupportBundle(
-                superBundleID: superBundleID,
+                superBundle: key.superBundle,
                 supportBundleURL: supportBundleURL,
                 installName: installName)
         } catch {
@@ -85,7 +85,7 @@ public final class LocalizationEditorService {
             try LocalizedStringsTextFile.remove(key.key, in: stringsURL)
 
             self.reviseSupportBundle(
-                superBundleID: superBundleID,
+                superBundle: key.superBundle,
                 supportBundleURL: supportBundleURL,
                 installName: installName)
         } catch {
@@ -95,16 +95,18 @@ public final class LocalizationEditorService {
 
     @MainActor
     func reviseSupportBundle(
-        superBundleID: String,
+        superBundle: Bundle,
         supportBundleURL: URL,
         installName: String
     ) {
-        self.bumpInfoVersion(supportBundleURL)
-
         let rootSupportBundleURL = supportBundleURL.deletingLastPathComponent().deletingLastPathComponent()
         // If URL is unchanged, then deletingLastPathComponent failed.
         guard rootSupportBundleURL != supportBundleURL else {
             Logger.error("Invalid bundle URL", LogCategory.localization)
+            return
+        }
+        guard let superBundleID = superBundle.bundleIdentifier else {
+            Logger.error("Super bundle ID not set", LogCategory.localization)
             return
         }
         let uniqueInstallName = "\(installName).\(UUIDBase58.idBase58)"
@@ -112,8 +114,10 @@ public final class LocalizationEditorService {
         do {
             let dstURL = try LocalizedStringBundlePaths.applicationSupportBundleURL(
                 superBundleID: superBundleID, installName: uniqueInstallName)
-            try LocalizedStringBundlePaths.copyDirectoryBundle(
-                from: supportBundleURL, to: dstURL, overwriteExisting: true)
+
+            try LocalizedStringBundlePaths.copyStringDirectories(
+                from: superBundle,
+                subdirectory: "Strings", to: dstURL, overwriteExisting: true)
 
             // Reload bundle & register
             if let b = Bundle(url: dstURL) {
@@ -122,67 +126,6 @@ public final class LocalizationEditorService {
             }
         } catch {
             Logger.error("Error: \(error)", LogCategory.localization)
-        }
-    }
-
-    // Bump the CFBundleVersion and CFBundleShortVersionString values.
-    // The version is stored in Info.plist at LocalizedStringBundlePaths.infoURL
-    @MainActor
-    private func bumpInfoVersion(_ supportBundleURL: URL) {
-        do {
-            // Locate Info.plist for the support bundle
-            let infoPlistURL = LocalizedStringBundlePaths.infoURL(
-                supportBundleURL: supportBundleURL)
-
-            // Load existing plist as a mutable dictionary
-            let data = try Data(contentsOf: infoPlistURL)
-            var format = PropertyListSerialization.PropertyListFormat.xml
-            guard var plist = try PropertyListSerialization.propertyList(from: data, options: [], format: &format) as? [String: Any] else {
-                throw NSError(domain: "LocalizationRuntime", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid Info.plist format"])
-            }
-
-            // Helper to increment a numeric string (e.g., "7" -> "8")
-            func incrementNumericString(_ s: String) -> String {
-                if let n = Int(s) { return String(n + 1) }
-                return "1"
-            }
-
-            // Helper to increment the last component of a dotted version (e.g., "1.2.3" -> "1.2.4")
-            func incrementDottedVersion(_ s: String) -> String {
-                var parts = s.split(separator: ".", omittingEmptySubsequences: false).map(String.init)
-                guard !parts.isEmpty else { return "1" }
-                let lastIdx = parts.count - 1
-                if let n = Int(parts[lastIdx]) {
-                    parts[lastIdx] = String(n + 1)
-                    return parts.joined(separator: ".")
-                } else {
-                    // If last is not numeric, append a numeric patch
-                    parts.append("1")
-                    return parts.joined(separator: ".")
-                }
-            }
-
-            // Bump CFBundleVersion
-            if let currentBuild = plist["CFBundleVersion"] as? String {
-                plist["CFBundleVersion"] = incrementNumericString(currentBuild)
-            } else if let currentBuildNum = plist["CFBundleVersion"] as? NSNumber {
-                plist["CFBundleVersion"] = String(currentBuildNum.intValue + 1)
-            } else {
-                plist["CFBundleVersion"] = "1"
-            }
-
-            // Bump CFBundleShortVersionString
-            if let currentShort = plist["CFBundleShortVersionString"] as? String {
-                plist["CFBundleShortVersionString"] = incrementDottedVersion(currentShort)
-            } else {
-                plist["CFBundleShortVersionString"] = "1.0.1"
-            }
-
-            // Write the updated plist back to disk in XML format
-            let updatedData = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
-            try updatedData.write(to: infoPlistURL, options: .atomic)
-        } catch {
-            // If bumping fails, continue with reloading; this is best-effort in dev
         }
     }
 }
