@@ -35,9 +35,7 @@ public enum LocalizedStringBundlePaths {
             create: true
         )
 
-        guard let appID = Bundle.main.bundleIdentifier else {
-            throw LocalizedStringBundlePathsError.bundleIDNotFound
-        }
+        let appID = Bundle.main.bundleID
 
         let root = base.appendingPathComponent(appID, isDirectory: true)
         let folder = root.appendingPathComponent(

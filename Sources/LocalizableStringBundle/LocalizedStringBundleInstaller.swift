@@ -34,9 +34,7 @@ public enum LocalizedStringBundleInstaller {
         installName: String? = nil,
         overwriteExisting: Bool = false
     ) throws {
-        guard let superBundleID = superBundle.bundleIdentifier else {
-            throw LocalizedStringBundleInstallerError.bundleIDNotFound
-        }
+        let superBundleID = superBundle.bundleID
 
         LocalizationKey.superBundles[superBundleID] = superBundle
 
@@ -64,4 +62,26 @@ public enum LocalizedStringBundleInstaller {
     }
 
     fileprivate static var areMenuNamesInstalled: Bool = false
+}
+
+extension Bundle {
+    /// Returns a stable identifier for the bundle. Falls back when `bundleIdentifier` is unavailable (e.g., SwiftPM resource bundles).
+    /// Priority:
+    /// 1. `bundleIdentifier`
+    /// 2. `CFBundleName` from Info.plist (prefixed with `spm.`)
+    /// 3. Last path component of the bundle URL without extension (prefixed with `spm.`)
+    /// 4. "spm.unknown"
+    public var bundleID: String {
+        if let id = self.bundleIdentifier, !id.isEmpty {
+            return id
+        }
+        if let name = self.object(forInfoDictionaryKey: kCFBundleNameKey as String) as? String, !name.isEmpty {
+            return "spm.\(name)"
+        }
+        let last = self.bundleURL.deletingPathExtension().lastPathComponent
+        if !last.isEmpty {
+            return "spm.\(last)"
+        }
+        return "spm.unknown"
+    }
 }

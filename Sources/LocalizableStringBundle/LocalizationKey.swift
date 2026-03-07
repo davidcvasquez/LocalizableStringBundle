@@ -27,7 +27,7 @@ public struct LocalizationKey: Hashable, Codable {
 
     /// The ID for the super bundle used to originally register this key.
     public var superBundleIdentifier: String? {
-        self.superBundle.bundleIdentifier
+        self.superBundle.bundleID
     }
 
     private let rawKey: String
@@ -115,9 +115,8 @@ public struct LocalizationKey: Hashable, Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(rawKey, forKey: .rawKey)
         try container.encode(tableName, forKey: .tableName)
-        if let superBundleID = superBundle.bundleIdentifier {
-            try container.encode(superBundleID, forKey: .superBundleID)
-        }
+        let superBundleID = superBundle.bundleID
+        try container.encode(superBundleID, forKey: .superBundleID)
     }
 
     private static func installLocaleChangeObserverIfNeeded() {
@@ -136,8 +135,7 @@ public struct LocalizationKey: Hashable, Codable {
 
     // - Returns: The support bundle associated with the ID of the original super bundle.
     private var supportBundle: Bundle? {
-        guard let id = self.superBundle.bundleIdentifier else { return nil }
-        return Self.supportBundles[id]
+        Self.supportBundles[self.superBundle.bundleID]
     }
 
     // - Returns: Whether the given bundle (and bundle ID) contains the stored key.
@@ -163,8 +161,7 @@ public struct LocalizationKey: Hashable, Codable {
     // - Returns: Either the support bundle or the super bundle as a fallback.
     private var effectiveBundle: Bundle {
         guard let bundle = supportBundle,
-           let bundleID = bundle.bundleIdentifier,
-           bundleContainsKey(bundle, bundleID: bundleID) else {
+              bundleContainsKey(bundle, bundleID: bundle.bundleID) else {
             return superBundle
         }
 

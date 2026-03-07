@@ -105,10 +105,7 @@ public final class LocalizationEditorService {
             Logger.error("Invalid bundle URL", LogCategory.localization)
             return
         }
-        guard let superBundleID = superBundle.bundleIdentifier else {
-            Logger.error("Super bundle ID not set", LogCategory.localization)
-            return
-        }
+        let superBundleID = superBundle.bundleID
         let uniqueInstallName = "\(installName).\(UUIDBase58.idBase58)"
 
         do {
