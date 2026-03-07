@@ -15,7 +15,66 @@ import OSLog
 
 final class LocalizableStringBundleTests: XCTestCase {
 
-    func testStringLookup() {
-        // TODO: Add localized string lookup test.
+    func testInternalStringsInstaller() {
+        do {
+            try LocalizableStringBundle.Strings.install()
+        } catch {
+            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+        }
     }
+
+    func testInternalStringLookups() {
+        do {
+            try LocalizableStringBundle.Strings.install()
+        } catch {
+            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+        }
+
+        let applyLabel = String(localized: LocalizationKey.applyLabel.resource)
+        XCTAssertEqual(applyLabel, "Apply")
+
+        let resetLabel = String(localized: LocalizationKey.resetLabel.resource)
+        XCTAssertEqual(resetLabel, "Reset")
+    }
+
+    func testApplicationSupportStringsInstaller() {
+        do {
+            try Strings.install()
+        } catch {
+            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+        }
+    }
+
+    func testApplicationSupportStringLookups() {
+        do {
+            try Strings.install()
+        } catch {
+            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+        }
+
+        let testLabel = String(localized: LocalizationKey.testLabel.resource)
+        XCTAssertEqual(testLabel, "Test")
+
+        let anotherTestLabel = String(localized: LocalizationKey.anotherTestLabel.resource)
+        XCTAssertEqual(anotherTestLabel, "Another Test")
+    }
+}
+
+public enum Strings {
+    public static func install() throws {
+        try LocalizedStringBundleInstaller.install(
+            from: .module,
+            installName: "Test-Strings",
+            overwriteExisting: true)
+    }
+}
+
+fileprivate func testName(_ key: String) -> LocalizationKey {
+    LocalizationKey(key, bundle: .module, tableName: "Test")
+}
+
+public extension LocalizationKey {
+
+    static let testLabel = testName("test")
+    static let anotherTestLabel = testName("anotherTest")
 }

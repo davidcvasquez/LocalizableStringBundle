@@ -27,13 +27,11 @@ public enum LocalizedStringBundleInstaller {
     /// Installs a support string bundle in Application Support using an embedded source bundle and registers a super fallback bundle.
     ///  - parameters:
     ///    - from: The bundle that owns the embedded bundle (e.g. Bundle.module for a package, Bundle.main for app).
-    ///    - embeddedBundleName: The embedded bundle name (without ".bundle"), e.g. "Application-Strings".
     ///    - installName: The filename to use in Application Support, e.g. "Application-Strings" (becomes "Application-Strings.bundle").
     ///    - overwriteExisting: Whether any existing bundle with the same name should be overwritten.
     public static func install(
         from superBundle: Bundle,
-        embeddedBundleName: String,
-        installName: String,
+        installName: String? = nil,
         overwriteExisting: Bool = false
     ) throws {
         guard let superBundleID = superBundle.bundleIdentifier else {
@@ -41,6 +39,10 @@ public enum LocalizedStringBundleInstaller {
         }
 
         LocalizationKey.superBundles[superBundleID] = superBundle
+
+        guard let installName else {
+            return
+        }
 
         let uniqueInstallName = "\(installName).\(UUIDBase58.idBase58)"
         // Build Application Support destination: .../<app-bundle-id>/Resources/<installName>.bundle
@@ -60,4 +62,6 @@ public enum LocalizedStringBundleInstaller {
                 name: uniqueInstallName)
         }
     }
+
+    fileprivate static var areMenuNamesInstalled: Bool = false
 }

@@ -78,20 +78,9 @@ public struct LocalizationKey: Hashable, Codable {
     private static var membership: [String: Set<String>] = [:]
     private static var localeObserverInstalled = false
 
-    /// The super bundle that owns the embedded bundle.
-    /// Note that this value is only correct in the context of initialization by a key and runtime bundle.
-    /// Initialization by decode needs to look up the original super bundle, which may be different for I/O in another context.
-    public static let superBundle: Bundle = {
-#if SWIFT_PACKAGE
-        return .module
-#else
-        return .main
-#endif
-    }()
-
     /// Initializer by the key and super bundle that owns the embedded bundle.
     public init(_ rawKey: String,
-                bundle: Bundle = Self.superBundle,
+                bundle: Bundle,
                 tableName: String = "Localizable"
     ) {
         self.rawKey = rawKey

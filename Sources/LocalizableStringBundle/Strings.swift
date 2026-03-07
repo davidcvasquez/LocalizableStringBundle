@@ -10,9 +10,17 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftUI
+import OSLog
+import LoggerCategories
+
+public enum Strings {
+    public static func install() throws {
+        try LocalizedStringBundleInstaller.install(from: .module)
+    }
+}
 
 fileprivate func menuName(_ key: String) -> LocalizationKey {
-    LocalizationKey(key, tableName: "MenuNames")
+    LocalizationKey(key, bundle: .module, tableName: "MenuNames")
 }
 
 public extension LocalizationKey {

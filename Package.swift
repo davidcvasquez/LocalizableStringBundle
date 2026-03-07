@@ -26,7 +26,7 @@ let package = Package(
             ],
             path: "Sources/LocalizableStringBundle",
             resources: [
-                .process("Resources")
+                .process("Resources/Strings")
             ]
         ),
         .testTarget(
@@ -35,6 +35,9 @@ let package = Package(
 	        "LocalizableStringBundle",
                 .product(name: "LoggerCategories", package: "LoggerCategories"),
                 .product(name: "CompactUUID", package: "CompactUUID")
+            ],
+            resources: [
+                .process("Resources/Strings")
             ]
         )
     ]

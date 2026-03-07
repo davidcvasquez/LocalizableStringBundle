@@ -19,6 +19,7 @@ public enum LocalizedStringBundlePaths {
         case bundleIDNotFound
         case overwriteNotEnabled
         case invalidURLs
+        case resourceNotFound
     }
 
     /// - Returns: The URL for the support bundle associated with the given original super bundle ID.
@@ -74,10 +75,10 @@ public enum LocalizedStringBundlePaths {
     ) throws {
 
         guard let subdirectoryURL = superBundle.url(
-            forResource: subdirectory, withExtension: nil) else {
+            forResource: subdirectory, withExtension: nil) ?? superBundle.resourceURL else {
 
             Logger.debug("subdirectory not found", LogCategory.localization)
-            return
+            throw LocalizedStringBundlePathsError.resourceNotFound
         }
 
         let fm = FileManager.default
