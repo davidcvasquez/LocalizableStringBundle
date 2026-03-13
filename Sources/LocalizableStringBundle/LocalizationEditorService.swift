@@ -12,10 +12,13 @@
 import OSLog
 import CompactUUID
 import LoggerCategories
-import SwiftUI
 
 @Observable
 public final class LocalizationEditorService {
+    enum LocalizationEditorServiceError: Error {
+        case reviseSupportBundleFailed
+    }
+
     public var isEditingStrings: Bool = false
     public var locale: String = Locale.current.language.languageCode?.identifier ?? "en"
 
@@ -48,12 +51,13 @@ public final class LocalizationEditorService {
                 forSuperBundleID: superBundleID)
             let stringsURL = LocalizedStringBundlePaths.localizableStringsURL(
                 supportBundleURL: supportBundleURL,
+                tableName: key.tableName,
                 locale: locale
             )
 
             try LocalizedStringsFile.set(key.key, newValue, in: stringsURL)
 
-            self.reviseSupportBundle(
+            try self.reviseSupportBundle(
                 superBundle: key.superBundle,
                 supportBundleURL: supportBundleURL,
                 installName: installName)
@@ -84,7 +88,7 @@ public final class LocalizationEditorService {
 
             try LocalizedStringsFile.remove(key.key, in: stringsURL)
 
-            self.reviseSupportBundle(
+            try self.reviseSupportBundle(
                 superBundle: key.superBundle,
                 supportBundleURL: supportBundleURL,
                 installName: installName)
@@ -98,7 +102,7 @@ public final class LocalizationEditorService {
         superBundle: Bundle,
         supportBundleURL: URL,
         installName: String
-    ) {
+    ) throws {
         let rootSupportBundleURL = supportBundleURL.deletingLastPathComponent().deletingLastPathComponent()
         // If URL is unchanged, then deletingLastPathComponent failed.
         guard rootSupportBundleURL != supportBundleURL else {
@@ -113,52 +117,19 @@ public final class LocalizationEditorService {
                 superBundleID: superBundleID, installName: uniqueInstallName)
 
             try LocalizedStringBundlePaths.copyStringDirectories(
-                from: superBundle,
-                subdirectory: "Strings", to: dstURL, overwriteExisting: true)
+                from: supportBundleURL,
+                to: dstURL,
+                overwriteExisting: true)
 
             // Reload bundle & register
             if let b = Bundle(url: dstURL) {
                 runtime.setSupportBundle(
-                    b, forSuperBundleID: superBundleID, installName: installName)
+                    b, forSuperBundleID: superBundleID,
+                    installName: installName, name: uniqueInstallName)
             }
         } catch {
             Logger.error("Error: \(error)", LogCategory.localization)
-        }
-    }
-}
-
-struct LocalizationEditableLabel: View {
-    @Environment(LocalizationRuntime.self) private var localization
-    @Environment(LocalizationEditorService.self) private var editor
-
-    let key: LocalizationKey
-
-    @State private var draft: String = ""
-    @FocusState private var focused: Bool
-
-    var body: some View {
-        Group {
-            if editor.isEditingStrings {
-                TextField("", text: $draft)
-                    .textFieldStyle(.roundedBorder)
-                    .onAppear { draft = editor.currentValue(for: key) }
-                    .focused($focused)
-                    .onSubmit {
-                        Task { await editor.setSupportValue(draft, for: key) }
-                    }
-                    .contextMenu {
-                        Button(.applyLabel) {
-                            Task { await editor.setSupportValue(draft, for: key) }
-                        }
-                        Button(.resetLabel) {
-                            Task { await editor.clearSupportValue(for: key) }
-                        }
-                    }
-            } else {
-                // Force refresh when support reloads
-                Text(key.resource)
-                    .id(localization.revision)
-            }
+            throw LocalizationEditorServiceError.reviseSupportBundleFailed
         }
     }
 }

@@ -36,7 +36,7 @@ public struct LocalizationKey: Hashable, Codable {
     public let superBundle: Bundle
 
     /// The table name for a given group of strings.
-    private let tableName: String
+    public let tableName: String
 
     /// Support bundles for live updates and remote service.
     public private(set) static var supportBundles: [String: Bundle] = [:]

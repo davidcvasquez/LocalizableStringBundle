@@ -29,13 +29,14 @@ public final class LocalizationRuntime {
     public func setSupportBundle(
         _ bundle: Bundle,
         forSuperBundleID superBundleID: String,
-        installName: String
+        installName: String,
+        name: String? = nil
     ) {
         supportBundles[superBundleID] = bundle
         revision &+= 1
         Logger.debug("update revision: \(revision) for new bundle \(ObjectIdentifier(bundle))", LogCategory.localization)
         LocalizationKey.installSupportBundle(
-            bundleID: superBundleID, bundle: bundle, installName: installName)
+            bundleID: superBundleID, bundle: bundle, installName: installName, name: name)
     }
 
     public func removeSupportBundle(forFallbackBundleID superBundleID: String) {
