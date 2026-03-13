@@ -12,7 +12,7 @@ Editing services are accessible in concert with a runtime that manages rewriting
 
 ## Usage
 
-Initialize @State for a LocalizationRunTime and then use the LocalizedStringBundleInstaller to specify the embedded bundle to be exported as a live bundle in the Application Support directory\:
+Initialize `@State` for a `LocalizationRunTime` and then call the `LocalizedStringBundleInstaller` to export the embedded bundle with your string table to a live bundle in the "Application Support" directory\:
 ```
 import LocalizableStringBundle
 
@@ -21,28 +21,33 @@ import LocalizableStringBundle
 
     init() {
             try LocalizedStringBundleInstaller.install(
-                from: LocalizationKey.superBundle,
-                embeddedBundleName: "Application-Strings",
-                installName: "ApplicationSupport-Strings",
+                from: .main,  // use .module for installs from a module
+                installName: "ModelSettingViewModeling-Strings",
                 overwriteExisting: true
             )
 ```
 
-Declare localization keys within an extension on LocalizationKey\:
+In the file where you declare your localization keys, provide a `settingName` wrapper with a table name:
+```
+fileprivate func settingName(_ key: String) -> LocalizationKey {
+    LocalizationKey(key, bundle: .main, tableName: "ModelSettings")
+}
+```
+And then declare your localization keys within an extension on `LocalizationKey`\:
 ```
 public extension LocalizationKey {
-    static var leafTransformLabel = LocalizationKey("leafTransform")
+    static var voronoiMandalaLabel = settingName("voronoiMandala")
 }
 ```
 
 Directly look up localized strings as follows\:
 ```
-Swift.print("leafTransformLabel: \(String(localized: leafTransformLabel.resource))")
+Swift.print("voronoiMandalaLabel: \(String(localized: voronoiMandalaLabel.resource))")
 ```
 
 Convenience initializers and helper functions are provided for common SwiftUI view types, including `Button`, `Label`, `Text`, and `help`, using compact dot notation\:
 ```
-Text(.leafTransformLabel)
+Text(.voronoiMandalaLabel)
 ```
 
 ## Supported Versions
