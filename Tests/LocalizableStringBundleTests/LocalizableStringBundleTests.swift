@@ -14,7 +14,7 @@ import LocalizableStringBundle
 import OSLog
 
 final class LocalizableStringBundleTests: XCTestCase {
-
+    @MainActor
     func testInternalStringsInstaller() {
         do {
             try LocalizableStringBundle.Strings.install()
@@ -23,6 +23,7 @@ final class LocalizableStringBundleTests: XCTestCase {
         }
     }
 
+    @MainActor
     func testInternalStringLookups() {
         do {
             try LocalizableStringBundle.Strings.install()
@@ -37,6 +38,7 @@ final class LocalizableStringBundleTests: XCTestCase {
         XCTAssertEqual(resetLabel, "Reset")
     }
 
+    @MainActor
     func testApplicationSupportStringsInstaller() {
         do {
             try Strings.install()
@@ -45,6 +47,7 @@ final class LocalizableStringBundleTests: XCTestCase {
         }
     }
 
+    @MainActor
     func testApplicationSupportStringLookups() {
         do {
             try Strings.install()
@@ -60,6 +63,7 @@ final class LocalizableStringBundleTests: XCTestCase {
     }
 }
 
+@MainActor
 public enum Strings {
     public static func install() throws {
         try LocalizedStringBundleInstaller.install(
@@ -69,12 +73,12 @@ public enum Strings {
     }
 }
 
+@MainActor
 fileprivate func testName(_ key: String) -> LocalizationKey {
     LocalizationKey(key, bundle: .module, tableName: "Test")
 }
 
 public extension LocalizationKey {
-
     static let testLabel = testName("test")
     static let anotherTestLabel = testName("anotherTest")
 }
