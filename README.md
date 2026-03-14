@@ -1,6 +1,12 @@
 # LocalizableStringBundle
 
-[![Swift](https://github.com/davidcvasquez/LocalizableStringBundle/actions/workflows/swift.yml/badge.svg)](https://github.com/davidcvasquez/LocalizableStringBundle/actions/workflows/swift.yml) [![codecov](https://codecov.io/gh/davidcvasquez/LocalizableStringBundle/graph/badge.svg?token=6K89YGI1F1)](https://codecov.io/gh/davidcvasquez/LocalizableStringBundle)
+[![Swift Build](https://github.com/davidcvasquez/LocalizableStringBundle/actions/workflows/swift.yml/badge.svg)](https://github.com/davidcvasquez/LocalizableStringBundle/actions/workflows/swift.yml)
+[![codecov](https://codecov.io/gh/davidcvasquez/LocalizableStringBundle/graph/badge.svg?token=6K89YGI1F1)](https://codecov.io/gh/davidcvasquez/LocalizableStringBundle)
+![iOS](https://img.shields.io/badge/iOS-18.0+-blue.svg)
+![iPadOS](https://img.shields.io/badge/iPadOS-18.0+-blue.svg)
+![macOS](https://img.shields.io/badge/macOS-15.0+-blue.svg)
+![Language](https://img.shields.io/badge/Language-Swift%206.2-orange.svg)
+[![GitHub License](https://img.shields.io/github/license/davidcvasquez/LocalizableStringBundle?color=353535)](https://github.com/davidcvasquez/LocalizableStringBundle/blob/main/LICENSE.txt)
 
 Live, localized string bundles for multiple domains (packages or an app), with editing services to apply changes or reset a change and fallback to a value provided by an embedded bundle. Remote service can also be implemented by updating the support bundle, which is managed in the "Application Support" directory.
 
@@ -52,4 +58,4 @@ Text(.voronoiMandalaLabel)
 
 ## Supported Versions
 
-The minimum Swift version supported by LocalizableStringBundle is 5.9.
+The minimum Swift version supported by LocalizableStringBundle is 6.2, on iOS 18

@@ -15,6 +15,7 @@ import LoggerCategories
 
 /// A layered localization key that enables managing strings in multiple domains (packages or an app) starting from an embedded bundle.
 /// Live updates and remote service can also be implemented using a support bundle in the Application Support directory.
+@MainActor
 public struct LocalizationKey: Hashable, Codable {
     static let resourcesDirectoryName: String = "Resources"
 
@@ -129,7 +130,9 @@ public struct LocalizationKey: Hashable, Codable {
             queue: nil
         ) { _ in
             // Locale changed -> clear membership decisions.
-            membership.removeAll()
+            Task { @MainActor in
+                membership.removeAll()
+            }
         }
     }
 

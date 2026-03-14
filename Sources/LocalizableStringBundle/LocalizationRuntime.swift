@@ -15,6 +15,7 @@ import OSLog
 import LoggerCategories
 
 /// A runtime “localization support” store that can reload and poke SwiftUI.
+@MainActor
 @Observable
 public final class LocalizationRuntime {
     /// Incremented whenever support bundles are reloaded.

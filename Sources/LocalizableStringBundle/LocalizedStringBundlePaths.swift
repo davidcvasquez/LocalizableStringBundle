@@ -14,6 +14,7 @@ import OSLog
 import LoggerCategories
 
 /// Paths for the localized string bundle and its localizable string files that are associated with a given bundle ID.
+@MainActor
 public enum LocalizedStringBundlePaths {
     enum LocalizedStringBundlePathsError: Error {
         case bundleIDNotFound

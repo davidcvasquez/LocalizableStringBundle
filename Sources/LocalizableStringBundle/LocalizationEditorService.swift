@@ -13,6 +13,7 @@ import OSLog
 import CompactUUID
 import LoggerCategories
 
+@MainActor
 @Observable
 public final class LocalizationEditorService {
     enum LocalizationEditorServiceError: Error {

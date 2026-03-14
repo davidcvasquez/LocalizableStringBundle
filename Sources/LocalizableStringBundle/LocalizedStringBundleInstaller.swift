@@ -16,6 +16,7 @@ import LoggerCategories
 
 /// Installer for layered localized string bundles in multiple domains (packages or an app), starting from an embedded bundle.
 /// Live updates and remote service can also be implemented using a support bundle in the Application Support directory.
+@MainActor
 public enum LocalizedStringBundleInstaller {
     enum LocalizedStringBundleInstallerError: Error {
         case bundleIDNotFound
