@@ -58,4 +58,4 @@ Text(.voronoiMandalaLabel)
 
 ## Supported Versions
 
-The minimum Swift version supported by LocalizableStringBundle is 6.2, on iOS 18
+The minimum Swift version supported by LocalizableStringBundle is 6.2, on iOS 18.0+ and macOS 15.0+.
