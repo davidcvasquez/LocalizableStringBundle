@@ -65,6 +65,7 @@ final class LocalizableStringBundleTests: XCTestCase {
 
 @MainActor
 public enum Strings {
+    @MainActor
     public static func install() throws {
         try LocalizedStringBundleInstaller.install(
             from: .module,

@@ -14,11 +14,13 @@ import OSLog
 import LoggerCategories
 
 public enum Strings {
+    @MainActor
     public static func install() throws {
         try LocalizedStringBundleInstaller.install(from: .module)
     }
 }
 
+@MainActor
 fileprivate func menuName(_ key: String) -> LocalizationKey {
     LocalizationKey(key, bundle: .module, tableName: "MenuNames")
 }

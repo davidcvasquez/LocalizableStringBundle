@@ -13,18 +13,21 @@ import OSLog
 import LoggerCategories
 import SwiftUI
 
+@MainActor
 public extension Button where Label == Text {
     init(_ key: LocalizationKey, action: @escaping () -> Void) {
         self.init(action: action) { Text(key.resource) }
     }
 }
 
+@MainActor
 public extension Label where Title == Text, Icon == Image {
     init(_ key: LocalizationKey, systemImage: String) {
         self.init { Text(key.resource) } icon: { Image(systemName: systemImage) }
     }
 }
 
+@MainActor
 public extension Text {
     init(_ key: LocalizationKey) {
         Logger.debug("Text init from key: \(key.key)", LogCategory.localization)
@@ -32,6 +35,7 @@ public extension Text {
     }
 }
 
+@MainActor
 public extension View {
     func help(_ key: LocalizationKey) -> some View {
         help(String(localized: key.resource))

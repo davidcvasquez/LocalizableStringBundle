@@ -29,6 +29,11 @@ public final class LocalizationEditorService {
         self.runtime = runtime
     }
 
+    // Workaround for XCTest crash during deallocation.
+    // Reproduces when module is built with default isolation set to MainActor.
+    // https://github.com/swiftlang/swift/issues/87316
+    nonisolated deinit {}
+
     /// Returns the *current* displayed string (support-first then fallback to super).
     public func currentValue(for key: LocalizationKey) -> String {
         // This gives the effective localized value (support or fallback)
