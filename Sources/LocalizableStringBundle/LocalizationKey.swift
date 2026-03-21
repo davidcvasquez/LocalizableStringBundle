@@ -175,8 +175,6 @@ public struct LocalizationKey: Hashable, Codable {
     public var resource: LocalizedStringResource {
         let bundle = effectiveBundle
 
-        Logger.debug("Effective bundle for \(rawKey): \(ObjectIdentifier(bundle))", LogCategory.localization)
-
         return LocalizedStringResource(.init(rawKey), table: self.tableName, bundle: bundle)
     }
 
