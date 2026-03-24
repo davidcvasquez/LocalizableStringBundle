@@ -30,7 +30,6 @@ public extension Label where Title == Text, Icon == Image {
 @MainActor
 public extension Text {
     init(_ key: LocalizationKey) {
-        Logger.debug("Text init from key: \(key.key)", LogCategory.localization)
         self.init(key.resource)
     }
 }
