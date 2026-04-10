@@ -9,6 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import LocalizableStringBundle
 import SwiftUI
 
 /// An editable localized label.

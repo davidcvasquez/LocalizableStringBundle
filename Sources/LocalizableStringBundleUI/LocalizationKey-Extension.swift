@@ -11,6 +11,7 @@
 
 import OSLog
 import LoggerCategories
+import LocalizableStringBundle
 import SwiftUI
 
 @MainActor

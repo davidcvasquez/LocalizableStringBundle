@@ -9,9 +9,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SwiftUI
 import OSLog
 import LoggerCategories
+import LocalizableStringBundle
 
 public enum Strings {
     @MainActor

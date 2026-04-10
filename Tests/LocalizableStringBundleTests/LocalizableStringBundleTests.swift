@@ -11,24 +11,25 @@
 
 import XCTest
 import LocalizableStringBundle
+import LocalizableStringBundleUI
 import OSLog
 
 final class LocalizableStringBundleTests: XCTestCase {
     @MainActor
     func testInternalStringsInstaller() {
         do {
-            try LocalizableStringBundle.Strings.install()
+            try LocalizableStringBundleUI.Strings.install()
         } catch {
-            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+            XCTFail("Failed to install LocalizableStringBundleUI.Strings: \(error)")
         }
     }
 
     @MainActor
     func testInternalStringLookups() {
         do {
-            try LocalizableStringBundle.Strings.install()
+            try LocalizableStringBundleUI.Strings.install()
         } catch {
-            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+            XCTFail("Failed to install LocalizableStringBundleUI.Strings: \(error)")
         }
 
         let applyLabel = String(localized: LocalizationKey.applyLabel.resource)
@@ -43,7 +44,7 @@ final class LocalizableStringBundleTests: XCTestCase {
         do {
             try Strings.install()
         } catch {
-            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+            XCTFail("Failed to install Strings: \(error)")
         }
     }
 
@@ -52,7 +53,7 @@ final class LocalizableStringBundleTests: XCTestCase {
         do {
             try Strings.install()
         } catch {
-            XCTFail("Failed to install LocalizableStringBundle.Strings: \(error)")
+            XCTFail("Failed to install Strings: \(error)")
         }
 
         let testLabel = String(localized: LocalizationKey.testLabel.resource)

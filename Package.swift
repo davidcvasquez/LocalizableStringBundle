@@ -9,7 +9,8 @@ let package = Package(
         .iOS(.v18)
     ],
     products: [
-        .library(name: "LocalizableStringBundle", targets: ["LocalizableStringBundle"])
+        .library(name: "LocalizableStringBundle", targets: ["LocalizableStringBundle"]),
+        .library(name: "LocalizableStringBundleUI", targets: ["LocalizableStringBundleUI"])
     ],
     dependencies: [
         .package(url: "https://github.com/davidcvasquez/LoggerCategories.git", from: "1.0.0"),
@@ -25,6 +26,18 @@ let package = Package(
                 .product(name: "CompactUUID", package: "CompactUUID")
             ],
             path: "Sources/LocalizableStringBundle",
+            swiftSettings: [
+                 .defaultIsolation(MainActor.self)
+            ]
+        ),
+        .target(
+            name: "LocalizableStringBundleUI",
+            dependencies: [
+                "LocalizableStringBundle",
+                .product(name: "LoggerCategories", package: "LoggerCategories"),
+                .product(name: "CompactUUID", package: "CompactUUID")
+            ],
+            path: "Sources/LocalizableStringBundleUI",
             resources: [
                 .process("Resources/Strings")
             ],
@@ -35,7 +48,8 @@ let package = Package(
         .testTarget(
             name: "LocalizableStringBundleTests",
             dependencies: [
-	        "LocalizableStringBundle",
+                "LocalizableStringBundle",
+                "LocalizableStringBundleUI",
                 .product(name: "LoggerCategories", package: "LoggerCategories"),
                 .product(name: "CompactUUID", package: "CompactUUID")
             ],
